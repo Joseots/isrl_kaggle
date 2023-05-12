@@ -1,18 +1,8 @@
 # Imports
 import tensorflow as tf
 import pandas as pd
-import json
 import numpy as np
-
-# Parquet Dataset
-DATAPATH = '/mnt/f/datasets/isrl_kaggle/'
-ROWS_PER_FRAME = 543  # number of landmarks per frame
-LANDMARKS = [61, 40, 37, 0, 267, 270, 291, 91, 84, 17, 314, 321, 78, 81, 13,
-             311, 308, 178, 14, 402] + np.arange(468, 512).tolist() + \
-             np.arange(522, 543).tolist()
-train_set = pd.read_csv(DATAPATH + 'train.csv')
-with open(DATAPATH + 'sign_to_prediction_index_map.json') as f:
-    index_map = json.load(f)
+import src
 
 
 # Data Generator
@@ -57,8 +47,9 @@ class DataGenerator(tf.keras.utils.Sequence):
     def load_relevant_data_subset(self, pq_path):
         data_columns = ['x', 'y', 'z']
         data = pd.read_parquet(pq_path, columns=data_columns)
-        n_frames = int(len(data) / ROWS_PER_FRAME)
-        data = data.values.reshape(n_frames, ROWS_PER_FRAME, len(data_columns))
+        n_frames = int(len(data) / src.ROWS_PER_FRAME)
+        data = data.values.reshape(n_frames, src.ROWS_PER_FRAME,
+                                   len(data_columns))
         return data.astype(np.float32)
 
     def __data_generation(self, list_IDs_temp):
@@ -70,9 +61,9 @@ class DataGenerator(tf.keras.utils.Sequence):
         # Generate data
         for i, ID in enumerate(list_IDs_temp):
             # Store sample
-            current_path = DATAPATH + self.train_set.path[ID]
+            current_path = src.DATAPATH + self.train_set.path[ID]
             data = self.load_relevant_data_subset(current_path)
-            data = np.nan_to_num(data[:, LANDMARKS, :], 0)
+            data = np.nan_to_num(data[:, src.LANDMARKS, :], 0)
             data = tf.image.resize(data, size=self.dim, method='nearest')
             X[i, ] = data.numpy()
 

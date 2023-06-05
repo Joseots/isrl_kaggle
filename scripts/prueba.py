@@ -1,21 +1,20 @@
-## Imports
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+import json
 
-from tensorflow import keras
-from tensorflow.keras import layers
 import tensorflow as tf
 import pandas as pd
-import json
 import numpy as np
 
-## Parquet Dataset
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+# Parquet Dataset
 DATAPATH = '/mnt/f/datasets/isrl_kaggle/'
 train_set = pd.read_csv(DATAPATH + 'train.csv')
 with open(DATAPATH + 'sign_to_prediction_index_map.json') as f:
-    index_map=json.load(f)
+    index_map = json.load(f)
 
 ROWS_PER_FRAME = 543  # number of landmarks per frame
+
 
 def load_relevant_data_subset(pq_path):
     data_columns = ['x', 'y', 'z']
@@ -23,6 +22,7 @@ def load_relevant_data_subset(pq_path):
     n_frames = int(len(data) / ROWS_PER_FRAME)
     data = data.values.reshape(n_frames, ROWS_PER_FRAME, len(data_columns))
     return data.astype(np.float32)
+
 
 LANDMARKS = [61, 40, 37, 0, 267, 270, 291, 91, 84, 17, 314, 321, 78, 81, 13,
              311, 308, 178, 14, 402] + np.arange(468, 512).tolist() + \
@@ -37,8 +37,8 @@ for index, row in train_set.iterrows():
     data = np.nan_to_num(data[:, LANDMARKS, :], 0)
     data = tf.image.resize(data, size=(85, 85), method='nearest')
     X[index, ] = data.numpy()
-    y[index, ] = tf.keras.utils.to_categorical(index_map[row.sign], num_classes=250)
-    # break
+    y[index, ] = tf.keras.utils.to_categorical(index_map[row.sign],
+                                               num_classes=250)
 
 print(len(X), X[0].shape, len(y), y[0].shape)
 

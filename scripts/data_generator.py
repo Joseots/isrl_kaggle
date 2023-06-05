@@ -1,8 +1,7 @@
-# Imports
 import tensorflow as tf
 import pandas as pd
 import numpy as np
-from . import ROWS_PER_FRAME, LANDMARKS, DATAPATH
+from config import ROWS_PER_FRAME, LANDMARKS, DATAPATH
 
 class LoadData():
     def __init__(self) -> None:

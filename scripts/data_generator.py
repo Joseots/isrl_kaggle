@@ -1,19 +1,21 @@
 import tensorflow as tf
 import pandas as pd
 import numpy as np
-from config import ROWS_PER_FRAME, LANDMARKS, DATAPATH
+from .config import ROWS_PER_FRAME, LANDMARKS, DATAPATH
+
 
 class LoadData():
     def __init__(self) -> None:
         pass
-    
+
     def load_relevant_data_subset(self, pq_path):
-            data_columns = ['x', 'y', 'z']
-            data = pd.read_parquet(pq_path, columns=data_columns)
-            n_frames = int(len(data) / ROWS_PER_FRAME)
-            data = data.values.reshape(n_frames, ROWS_PER_FRAME,
-                                    len(data_columns))
-            return data.astype(np.float32)
+        data_columns = ['x', 'y', 'z']
+        data = pd.read_parquet(pq_path, columns=data_columns)
+        n_frames = int(len(data) / ROWS_PER_FRAME)
+        data = data.values.reshape(n_frames, ROWS_PER_FRAME,
+                                   len(data_columns))
+        return data.astype(np.float32)
+
 
 # Data Generator
 class DataGenerator(tf.keras.utils.Sequence):

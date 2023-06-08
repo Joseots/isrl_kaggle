@@ -14,6 +14,6 @@ LANDMARKS = {
     'face': [61, 40, 37, 0, 267, 270, 291, 91, 84, 17, 314, 321, 78, 81, 13,
              311, 308, 178, 14, 402],
     'left_hand': np.arange(468, 489),
-    'pose': np.arange(490, 512),
+    'pose': np.delete(np.arange(490, 504), (8, 9)),
     'right_hand': np.arange(522, 543)
     }
